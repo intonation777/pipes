@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>کاتالوگ لوله</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="container header-content">
+
+        <div>
+            <h1>کاتالوگ لوله</h1>
+            <p>مشخصات و قیمت روز محصولات</p>
+        </div>
+
+        <a
+            class="download-btn"
+            href="pipes.xlsx"
+            download
+        >
+            📥 دانلود لیست Excel
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="hero">
+
+        <h2>لیست محصولات</h2>
+
+        <p>
+            برای پیدا کردن محصول مورد نظر، سایز یا نام لوله را جستجو کنید.
+        </p>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="جستجو بر اساس نام، سایز، برند..."
+            >
+
+        </div>
+
+    </section>
+
+
+    <section class="info">
+
+        <div>
+            <span>تعداد محصولات</span>
+            <strong id="productCount">0</strong>
+        </div>
+
+        <div>
+            <span>آخرین بروزرسانی</span>
+            <strong id="lastUpdate">-</strong>
+        </div>
+
+    </section>
+
+
+    <section class="table-wrapper">
+
+        <table>
+
+            <thead>
+                <tr id="tableHead">
+                </tr>
+            </thead>
+
+            <tbody id="productsTable">
+            </tbody>
+
+        </table>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div class="container">
+
+        <p>
+            © 2026 - کاتالوگ محصولات
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
