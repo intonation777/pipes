@@ -1,130 +1,330 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>کاتالوگ لوله</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <meta
+        name="theme-color"
+        content="#071a1d"
+    >
+
+    <meta
+        name="description"
+        content="کاتالوگ محصولات لوله، مشخصات و قیمت روز محصولات"
+    >
+
+    <title>کاتالوگ لوله | قیمت و مشخصات محصولات</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Estedad:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
+
 
 <body>
 
-<header class="header">
+    <!-- =========================
+         HEADER
+    ========================== -->
 
-    <div class="container header-content">
+    <header class="header">
 
-        <div>
-            <h1>کاتالوگ لوله</h1>
-            <p>مشخصات و قیمت روز محصولات</p>
+        <div class="header-glow header-glow-one"></div>
+        <div class="header-glow header-glow-two"></div>
+
+        <div class="container header-content">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <span>▥</span>
+                </div>
+
+                <div class="brand-text">
+
+                    <div class="brand-kicker">
+                        PRODUCT CATALOG
+                    </div>
+
+                    <h1>
+                        کاتالوگ لوله
+                    </h1>
+
+                    <p>
+                        مشخصات، سایز و قیمت روز محصولات
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <a
+                class="download-btn"
+                href="pipes.xlsx"
+                download
+            >
+
+                <span class="download-icon">
+                    ↓
+                </span>
+
+                <span>
+                    دانلود لیست Excel
+                </span>
+
+            </a>
+
         </div>
 
-        <a
-            class="download-btn"
-            href="pipes.xlsx"
-            download
-        >
-            📥 دانلود لیست Excel
-        </a>
-
-    </div>
-
-</header>
-
-
-<main class="container">
-
-<section class="hero">
-
-    <div class="hero-text">
-
-        <span class="eyebrow">CATALOG</span>
-
-        <h2>لیست محصولات</h2>
-
-        <p>
-            محصولات را بر اساس دسته‌بندی انتخاب کنید و
-            قیمت و مشخصات به‌روز را مشاهده کنید.
-        </p>
-
-    </div>
-
-    <div class="search-box">
-
-        <span class="search-icon">⌕</span>
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="جستجوی نام محصول، سایز، ضخامت و..."
-        >
-
-    </div>
-
-</section>
-
-<section class="categories-section">
-
-    <div class="section-title">
+    </header>
 
 
 
-    </div>
-
-    <div id="categoryMenu" class="category-cards"></div>
-
-</section>
+    <main class="container main-content">
 
 
-    <section class="info">
+        <!-- =========================
+             HERO
+        ========================== -->
 
-        <div>
-            <span>تعداد محصولات</span>
-            <strong id="productCount">0</strong>
+        <section class="hero">
+
+            <div class="hero-text">
+
+                <div class="eyebrow">
+                    CATALOG
+                </div>
+
+                <h2>
+                    محصولات را سریع پیدا کنید
+                </h2>
+
+                <p>
+                    دسته‌بندی موردنظر را انتخاب کنید یا نام محصول،
+                    سایز، ضخامت و مشخصات آن را جستجو کنید.
+                </p>
+
+            </div>
+
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    ⌕
+                </span>
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    autocomplete="off"
+                    placeholder="جستجوی محصول، سایز، ضخامت و..."
+                >
+
+                <button
+                    type="button"
+                    class="clear-search"
+                    id="clearSearch"
+                    aria-label="پاک کردن جستجو"
+                >
+                    ×
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             CATEGORIES
+        ========================== -->
+
+        <section class="categories-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span>
+                        دسته‌بندی
+                    </span>
+
+                    <h3>
+                        انتخاب گروه محصولات
+                    </h3>
+
+                </div>
+
+                <div class="category-hint">
+                    ← برای مشاهده بیشتر بکشید
+                </div>
+
+            </div>
+
+
+            <div
+                id="categoryMenu"
+                class="category-cards"
+            ></div>
+
+        </section>
+
+
+
+        <!-- =========================
+             INFO
+        ========================== -->
+
+        <section class="info">
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    ▦
+                </div>
+
+                <div class="info-content">
+
+                    <span>
+                        تعداد محصولات
+                    </span>
+
+                    <strong id="productCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon update-icon">
+                    ↻
+                </div>
+
+                <div class="info-content">
+
+                    <span>
+                        آخرین بروزرسانی
+                    </span>
+
+                    <strong id="lastUpdate">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             PRODUCT TABLE
+        ========================== -->
+
+        <section class="products-section">
+
+            <div class="products-header">
+
+                <div>
+
+                    <span class="products-kicker">
+                        PRODUCTS
+                    </span>
+
+                    <h3>
+                        لیست محصولات
+                    </h3>
+
+                </div>
+
+                <div
+                    id="resultStatus"
+                    class="result-status"
+                >
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr id="tableHead">
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="productsTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <div class="container footer-content">
+
+            <div>
+                کاتالوگ محصولات
+            </div>
+
+            <span>
+                © 2026
+            </span>
+
         </div>
 
-        <div>
-            <span>آخرین بروزرسانی</span>
-            <strong id="lastUpdate">-</strong>
-        </div>
-
-    </section>
+    </footer>
 
 
-    <section class="table-wrapper">
 
-        <table>
-
-            <thead>
-                <tr id="tableHead">
-                </tr>
-            </thead>
-
-            <tbody id="productsTable">
-            </tbody>
-
-        </table>
-
-    </section>
-
-</main>
-
-
-<footer>
-
-    <div class="container">
-
-        <p>
-            © 2026 - کاتالوگ محصولات
-        </p>
-
-    </div>
-
-</footer>
-
-
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
 </body>
+
 </html>
