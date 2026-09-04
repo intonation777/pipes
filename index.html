@@ -35,25 +35,53 @@
 
 <main class="container">
 
-    <section class="hero">
+<section class="hero">
+
+    <div class="hero-text">
+
+        <span class="eyebrow">CATALOG</span>
 
         <h2>لیست محصولات</h2>
 
         <p>
-            برای پیدا کردن محصول مورد نظر، سایز یا نام لوله را جستجو کنید.
+            محصولات را بر اساس دسته‌بندی انتخاب کنید و
+            قیمت و مشخصات به‌روز را مشاهده کنید.
         </p>
 
-        <div class="search-box">
+    </div>
 
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="جستجو بر اساس نام، سایز، برند..."
-            >
+    <div class="search-box">
 
+        <span class="search-icon">⌕</span>
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="جستجوی نام محصول، سایز، ضخامت و..."
+        >
+
+    </div>
+
+</section>
+
+<section class="categories-section">
+
+    <div class="section-title">
+
+        <div>
+            <span>PRODUCT CATEGORIES</span>
+            <h3>دسته‌بندی محصولات</h3>
         </div>
 
-    </section>
+        <p>
+            یک دسته را انتخاب کنید
+        </p>
+
+    </div>
+
+    <div id="categoryMenu" class="category-cards"></div>
+
+</section>
 
 
     <section class="info">
