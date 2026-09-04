@@ -71,7 +71,7 @@ async function loadProducts() {
             : [];
 
         lastUpdate.textContent =
-            data.last_update || "-";
+            formatPersianDate(data.last_update);
 
         createCategoryMenu();
 
@@ -642,6 +642,56 @@ function updateSearchUI() {
 
 }
 
+function formatPersianDate(dateString) {
+
+    if (!dateString) {
+        return "-";
+    }
+
+    try {
+
+        // تبدیل فرمت:
+        // 2026-09-04 15:30:00
+        // به فرمت قابل پردازش JavaScript
+
+        const normalized =
+            dateString.replace(" ", "T");
+
+        const date =
+            new Date(normalized);
+
+        if (isNaN(date.getTime())) {
+            return dateString;
+        }
+
+
+        const formatter =
+            new Intl.DateTimeFormat(
+                "fa-IR-u-ca-persian",
+                {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+
+        return formatter.format(date);
+
+    } catch (error) {
+
+        console.error(
+            "خطا در تبدیل تاریخ:",
+            error
+        );
+
+        return dateString;
+
+    }
+
+}
 
 // =========================================
 // جلوگیری از HTML Injection
