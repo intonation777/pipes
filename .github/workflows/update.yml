@@ -1,9 +1,6 @@
 name: Update Pipe Data
 
-on:
-  push:
-    paths:
-      - pipes.xlsx
+on: push
 
 jobs:
   update:
@@ -22,10 +19,12 @@ jobs:
           python-version: "3.11"
 
       - name: Install Python packages
-        run: pip install pandas openpyxl
+        run: |
+          pip install pandas openpyxl
 
       - name: Convert Excel to JSON
-        run: python update.py
+        run: |
+          python update.py
 
       - name: Save JSON
         run: |
