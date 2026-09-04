@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Estedad:wght@300;400;500;600;700;800&display=swap');
 * {
     box-sizing: border-box;
     margin: 0;
@@ -24,7 +23,7 @@ html {
 }
 
 body {
-    font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
+    font-family: "Estedad", Tahoma, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.8;
