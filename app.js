@@ -8,16 +8,54 @@ const searchInput = document.getElementById("searchInput");
 const productCount = document.getElementById("productCount");
 const lastUpdate = document.getElementById("lastUpdate");
 
+const clearSearch = document.getElementById("clearSearch");
+const resultStatus = document.getElementById("resultStatus");
 
-// -----------------------------------------
+
+// =========================================
+// عناصر اصلی
+// =========================================
+
+const categoryMenu = document.getElementById("categoryMenu");
+
+
+// =========================================
+// نرمال‌سازی متن فارسی
+// =========================================
+
+function normalizeText(value) {
+
+    if (value === undefined || value === null) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/ي/g, "ی")
+        .replace(/ى/g, "ی")
+        .replace(/ك/g, "ک")
+        .replace(/ة/g, "ه")
+        .replace(/ۀ/g, "ه")
+        .replace(/ؤ/g, "و")
+        .replace(/إ/g, "ا")
+        .replace(/أ/g, "ا")
+        .replace(/َ|ِ|ُ|ّ|ْ|ً|ٍ|ٌ/g, "")
+        .replace(/[۰-۹]/g, digit => {
+            return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+        })
+        .toLowerCase()
+        .trim();
+
+}
+
+
+// =========================================
 // دریافت اطلاعات
-// -----------------------------------------
+// =========================================
 
 async function loadProducts() {
 
     try {
 
-        // جلوگیری از کش شدن اطلاعات قدیمی
         const response = await fetch(
             "pipes.json?v=" + Date.now()
         );
@@ -28,143 +66,210 @@ async function loadProducts() {
 
         const data = await response.json();
 
-        sheets = data.sheets || [];
+        sheets = Array.isArray(data.sheets)
+            ? data.sheets
+            : [];
 
-        lastUpdate.textContent = data.last_update || "-";
+        lastUpdate.textContent =
+            data.last_update || "-";
 
         createCategoryMenu();
 
         if (sheets.length > 0) {
-            showSheet(0);
+
+            showAllProducts();
+
+            const firstCard =
+                categoryMenu.querySelector(
+                    ".category-card"
+                );
+
+            if (firstCard) {
+                setActiveButton(firstCard);
+            }
+
+        } else {
+
+            renderProducts([]);
+
         }
 
     } catch (error) {
 
         console.error(error);
 
+        tableHead.innerHTML = "";
+
         tableBody.innerHTML = `
-            <tr>
+            <tr class="empty-row">
                 <td colspan="20">
-                    اطلاعات محصولات هنوز آماده نیست.
+                    <div class="empty-state">
+                        <div class="empty-icon">!</div>
+                        <strong>
+                            اطلاعات محصولات در دسترس نیست
+                        </strong>
+                        <span>
+                            لطفاً دوباره صفحه را بارگذاری کنید.
+                        </span>
+                    </div>
                 </td>
             </tr>
         `;
+
+        productCount.textContent = "0";
+        resultStatus.textContent = "خطا در دریافت اطلاعات";
+
     }
+
 }
 
 
-// -----------------------------------------
+// =========================================
 // ساخت منوی دسته‌بندی
-// -----------------------------------------
+// =========================================
 
 function createCategoryMenu() {
 
-    const menu = document.getElementById("categoryMenu");
-
-    if (!menu) {
+    if (!categoryMenu) {
         return;
     }
 
-    menu.innerHTML = "";
+    categoryMenu.innerHTML = "";
 
-    // همه محصولات
     let totalProducts = 0;
 
     sheets.forEach(sheet => {
-        totalProducts += (sheet.products || []).length;
+
+        totalProducts +=
+            Array.isArray(sheet.products)
+                ? sheet.products.length
+                : 0;
+
     });
 
 
-    const allCard = document.createElement("button");
+    // =====================================
+    // همه محصولات
+    // =====================================
 
-    allCard.className = "category-card active";
+    const allCard =
+        createCategoryCard(
+            "▦",
+            "ALL PRODUCTS",
+            "همه محصولات",
+            totalProducts
+        );
 
-    allCard.innerHTML = `
-        <div class="category-icon">▦</div>
+    allCard.classList.add("active");
+
+    allCard.addEventListener(
+        "click",
+        () => {
+
+            setActiveButton(allCard);
+
+            showAllProducts();
+
+        }
+    );
+
+    categoryMenu.appendChild(allCard);
+
+
+    // =====================================
+    // دسته‌ها
+    // =====================================
+
+    sheets.forEach((sheet, index) => {
+
+        const count =
+            Array.isArray(sheet.products)
+                ? sheet.products.length
+                : 0;
+
+        const card =
+            createCategoryCard(
+                "▤",
+                `CATEGORY ${index + 1}`,
+                sheet.name || `دسته ${index + 1}`,
+                count
+            );
+
+        card.addEventListener(
+            "click",
+            () => {
+
+                setActiveButton(card);
+
+                showSheet(index);
+
+            }
+        );
+
+        categoryMenu.appendChild(card);
+
+    });
+
+}
+
+
+// =========================================
+// ساخت کارت دسته‌بندی
+// =========================================
+
+function createCategoryCard(
+    icon,
+    label,
+    title,
+    count
+) {
+
+    const card =
+        document.createElement("button");
+
+    card.type = "button";
+
+    card.className =
+        "category-card";
+
+
+    card.innerHTML = `
+
+        <div class="category-icon">
+            ${icon}
+        </div>
 
         <div class="category-content">
 
             <span class="category-label">
-                ALL PRODUCTS
+                ${escapeHTML(label)}
             </span>
 
             <strong>
-                همه محصولات
+                ${escapeHTML(title)}
             </strong>
 
             <small>
-                ${totalProducts.toLocaleString("fa-IR")} محصول
+                ${count.toLocaleString("fa-IR")}
+                محصول
             </small>
 
         </div>
 
-        <span class="category-arrow">←</span>
+        <span class="category-arrow">
+            ←
+        </span>
+
     `;
 
-    allCard.addEventListener("click", () => {
-
-        setActiveButton(allCard);
-
-        showAllProducts();
-
-    });
-
-    menu.appendChild(allCard);
-
-
-    // دسته‌های مربوط به Sheetها
-    sheets.forEach((sheet, index) => {
-
-        const card = document.createElement("button");
-
-        const count =
-            (sheet.products || []).length;
-
-
-        card.className = "category-card";
-
-        card.innerHTML = `
-            <div class="category-icon">▤</div>
-
-            <div class="category-content">
-
-                <span class="category-label">
-                    CATEGORY ${index + 1}
-                </span>
-
-                <strong>
-                    ${sheet.name}
-                </strong>
-
-                <small>
-                    ${count.toLocaleString("fa-IR")} محصول
-                </small>
-
-            </div>
-
-            <span class="category-arrow">←</span>
-        `;
-
-
-        card.addEventListener("click", () => {
-
-            setActiveButton(card);
-
-            showSheet(index);
-
-        });
-
-
-        menu.appendChild(card);
-
-    });
+    return card;
 
 }
 
 
-// -----------------------------------------
-// فعال کردن دکمه انتخاب شده
-// -----------------------------------------
+// =========================================
+// فعال کردن دسته
+// =========================================
 
 function setActiveButton(activeButton) {
 
@@ -177,11 +282,13 @@ function setActiveButton(activeButton) {
         });
 
     activeButton.classList.add("active");
+
 }
 
-// -----------------------------------------
+
+// =========================================
 // نمایش یک Sheet
-// -----------------------------------------
+// =========================================
 
 function showSheet(index) {
 
@@ -191,19 +298,23 @@ function showSheet(index) {
         return;
     }
 
-    currentProducts = sheet.products || [];
+    currentProducts =
+        Array.isArray(sheet.products)
+            ? sheet.products
+            : [];
+
+    searchInput.value = "";
+
+    updateSearchUI();
 
     renderProducts(currentProducts);
-
-    // پاک کردن جستجوی قبلی
-    searchInput.value = "";
 
 }
 
 
-// -----------------------------------------
-// نمایش تمام محصولات
-// -----------------------------------------
+// =========================================
+// نمایش همه محصولات
+// =========================================
 
 function showAllProducts() {
 
@@ -211,49 +322,80 @@ function showAllProducts() {
 
     sheets.forEach(sheet => {
 
-        if (sheet.products) {
+        if (Array.isArray(sheet.products)) {
 
-            currentProducts = currentProducts.concat(
-                sheet.products
-            );
+            currentProducts =
+                currentProducts.concat(
+                    sheet.products
+                );
 
         }
 
     });
+
+    searchInput.value = "";
+
+    updateSearchUI();
 
     renderProducts(currentProducts);
 
 }
 
 
-// -----------------------------------------
+// =========================================
 // ساخت جدول
-// -----------------------------------------
+// =========================================
 
 function renderProducts(items) {
 
     tableHead.innerHTML = "";
     tableBody.innerHTML = "";
 
-    productCount.textContent = items.length;
+    productCount.textContent =
+        items.length.toLocaleString("fa-IR");
+
+    resultStatus.textContent =
+        `${items.length.toLocaleString("fa-IR")} محصول`;
 
 
-    if (items.length === 0) {
+    if (!items.length) {
 
         tableBody.innerHTML = `
-            <tr>
+
+            <tr class="empty-row">
+
                 <td colspan="20">
-                    محصولی پیدا نشد.
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            ⌕
+                        </div>
+
+                        <strong>
+                            محصولی پیدا نشد
+                        </strong>
+
+                        <span>
+                            عبارت جستجو یا دسته‌بندی دیگری را امتحان کنید.
+                        </span>
+
+                    </div>
+
                 </td>
+
             </tr>
+
         `;
 
         return;
+
     }
 
 
-    // پیدا کردن تمام ستون‌های موجود
-    // در محصولات فعلی
+    // =====================================
+    // پیدا کردن ستون‌ها
+    // =====================================
 
     const columns = [];
 
@@ -270,11 +412,14 @@ function renderProducts(items) {
     });
 
 
-    // Header جدول
+    // =====================================
+    // Header
+    // =====================================
 
     columns.forEach(column => {
 
-        const th = document.createElement("th");
+        const th =
+            document.createElement("th");
 
         th.textContent = column;
 
@@ -283,34 +428,67 @@ function renderProducts(items) {
     });
 
 
-    // محصولات
+    // =====================================
+    // Rows
+    // =====================================
 
     items.forEach(product => {
 
-        const row = document.createElement("tr");
+        const row =
+            document.createElement("tr");
+
+        columns.forEach((column, index) => {
+
+            const td =
+                document.createElement("td");
+
+            const value =
+                product[column];
 
 
-        columns.forEach(column => {
+            // ---------------------------------
+            // عنوان ستون برای موبایل
+            // ---------------------------------
 
-            const td = document.createElement("td");
-
-            const value = product[column];
+            td.dataset.label = column;
 
 
+            // ---------------------------------
             // قیمت
+            // ---------------------------------
+
             if (
                 typeof value === "number" &&
                 column.includes("قیمت")
             ) {
 
                 td.textContent =
-                    formatPrice(value) + " تومان";
+                    formatPrice(value) +
+                    " تومان";
 
                 td.classList.add("price");
 
             }
 
+
+            // ---------------------------------
+            // عددهای بزرگ
+            // ---------------------------------
+
+            else if (
+                typeof value === "number"
+            ) {
+
+                td.textContent =
+                    formatNumber(value);
+
+            }
+
+
+            // ---------------------------------
             // سایر اطلاعات
+            // ---------------------------------
+
             else {
 
                 td.textContent =
@@ -322,10 +500,15 @@ function renderProducts(items) {
             }
 
 
+            // اولین ستون
+            if (index === 0) {
+                td.classList.add("product-title-cell");
+            }
+
+
             row.appendChild(td);
 
         });
-
 
         tableBody.appendChild(row);
 
@@ -334,34 +517,57 @@ function renderProducts(items) {
 }
 
 
-// -----------------------------------------
+// =========================================
 // فرمت قیمت
-// -----------------------------------------
+// =========================================
 
 function formatPrice(price) {
 
-    return new Intl.NumberFormat("fa-IR").format(
-        price
-    );
+    return new Intl.NumberFormat(
+        "fa-IR"
+    ).format(price);
 
 }
 
 
-// -----------------------------------------
+// =========================================
+// فرمت اعداد
+// =========================================
+
+function formatNumber(value) {
+
+    if (
+        typeof value !== "number"
+    ) {
+        return value;
+    }
+
+    return new Intl.NumberFormat(
+        "fa-IR"
+    ).format(value);
+
+}
+
+
+// =========================================
 // جستجو
-// -----------------------------------------
+// =========================================
 
 searchInput.addEventListener(
     "input",
     function () {
 
         const query =
-            this.value.trim().toLowerCase();
+            normalizeText(this.value);
+
+        updateSearchUI();
 
 
         if (!query) {
 
-            renderProducts(currentProducts);
+            renderProducts(
+                currentProducts
+            );
 
             return;
 
@@ -369,14 +575,19 @@ searchInput.addEventListener(
 
 
         const filtered =
-            currentProducts.filter(product => {
+            currentProducts.filter(
+                product => {
 
-                return Object.values(product)
-                    .join(" ")
-                    .toLowerCase()
-                    .includes(query);
+                    return Object.values(product)
+                        .some(value => {
 
-            });
+                            return normalizeText(value)
+                                .includes(query);
+
+                        });
+
+                }
+            );
 
 
         renderProducts(filtered);
@@ -385,8 +596,71 @@ searchInput.addEventListener(
 );
 
 
-// -----------------------------------------
-// شروع برنامه
-// -----------------------------------------
+// =========================================
+// پاک کردن جستجو
+// =========================================
+
+clearSearch.addEventListener(
+    "click",
+    () => {
+
+        searchInput.value = "";
+
+        updateSearchUI();
+
+        renderProducts(
+            currentProducts
+        );
+
+        searchInput.focus();
+
+    }
+);
+
+
+// =========================================
+// وضعیت Search
+// =========================================
+
+function updateSearchUI() {
+
+    if (
+        searchInput.value.trim()
+    ) {
+
+        clearSearch.classList.add(
+            "visible"
+        );
+
+    } else {
+
+        clearSearch.classList.remove(
+            "visible"
+        );
+
+    }
+
+}
+
+
+// =========================================
+// جلوگیری از HTML Injection
+// =========================================
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// =========================================
+// شروع
+// =========================================
 
 loadProducts();
