@@ -24,12 +24,10 @@ const categoryMenu = document.getElementById("categoryMenu");
 // =========================================
 
 function normalizeText(value) {
-
-    if (value === undefined || value === null) {
-        return "";
-    }
+    if (value === undefined || value === null) return "";
 
     return String(value)
+        // حروف عربی → فارسی
         .replace(/ي/g, "ی")
         .replace(/ى/g, "ی")
         .replace(/ك/g, "ک")
@@ -38,13 +36,25 @@ function normalizeText(value) {
         .replace(/ؤ/g, "و")
         .replace(/إ/g, "ا")
         .replace(/أ/g, "ا")
-        .replace(/َ|ِ|ُ|ّ|ْ|ً|ٍ|ٌ/g, "")
-        .replace(/[۰-۹]/g, digit => {
-            return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
-        })
+
+        // حذف اعراب
+        .replace(/[\u064B-\u065F\u0670]/g, "")
+
+        // اعداد فارسی → انگلیسی
+        .replace(/[۰-۹]/g, digit =>
+            String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit))
+        )
+
+        // اعداد عربی → انگلیسی
+        .replace(/[٠-٩]/g, digit =>
+            String("٠١٢٣٤٥٦٧٨٩".indexOf(digit))
+        )
+
+        // فاصله‌های اضافی
+        .replace(/\s+/g, " ")
+
         .toLowerCase()
         .trim();
-
 }
 
 
@@ -553,48 +563,23 @@ function formatNumber(value) {
 // جستجو
 // =========================================
 
-searchInput.addEventListener(
-    "input",
-    function () {
+searchInput.addEventListener("input", function () {
+    const query = normalizeText(this.value);
+    updateSearchUI();
 
-        const query =
-            normalizeText(this.value);
-
-        updateSearchUI();
-
-
-        if (!query) {
-
-            renderProducts(
-                currentProducts
-            );
-
-            return;
-
-        }
-
-
-        const filtered =
-            currentProducts.filter(
-                product => {
-
-                    return Object.values(product)
-                        .some(value => {
-
-                            return normalizeText(value)
-                                .includes(query);
-
-                        });
-
-                }
-            );
-
-
-        renderProducts(filtered);
-
+    if (!query) {
+        renderProducts(currentProducts);
+        return;
     }
-);
 
+    const filtered = currentProducts.filter(product => {
+        return Object.values(product).some(value => {
+            return normalizeText(value).includes(query);
+        });
+    });
+
+    renderProducts(filtered);
+});
 
 // =========================================
 // پاک کردن جستجو
