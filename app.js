@@ -59,59 +59,106 @@ async function loadProducts() {
 
 function createCategoryMenu() {
 
-    const hero = document.querySelector(".hero");
+    const menu = document.getElementById("categoryMenu");
 
-    const oldMenu = document.getElementById("categoryMenu");
-
-    if (oldMenu) {
-        oldMenu.remove();
+    if (!menu) {
+        return;
     }
 
-    const menu = document.createElement("div");
+    menu.innerHTML = "";
 
-    menu.id = "categoryMenu";
-    menu.className = "category-menu";
+    // همه محصولات
+    let totalProducts = 0;
 
-    // گزینه همه محصولات
-    const allButton = document.createElement("button");
+    sheets.forEach(sheet => {
+        totalProducts += (sheet.products || []).length;
+    });
 
-    allButton.textContent = "همه محصولات";
-    allButton.className = "category-btn active";
 
-    allButton.addEventListener("click", () => {
+    const allCard = document.createElement("button");
 
-        setActiveButton(allButton);
+    allCard.className = "category-card active";
+
+    allCard.innerHTML = `
+        <div class="category-icon">▦</div>
+
+        <div class="category-content">
+
+            <span class="category-label">
+                ALL PRODUCTS
+            </span>
+
+            <strong>
+                همه محصولات
+            </strong>
+
+            <small>
+                ${totalProducts.toLocaleString("fa-IR")} محصول
+            </small>
+
+        </div>
+
+        <span class="category-arrow">←</span>
+    `;
+
+    allCard.addEventListener("click", () => {
+
+        setActiveButton(allCard);
 
         showAllProducts();
 
     });
 
-    menu.appendChild(allButton);
+    menu.appendChild(allCard);
 
 
-    // ساخت دکمه برای هر Sheet
+    // دسته‌های مربوط به Sheetها
     sheets.forEach((sheet, index) => {
 
-        const button = document.createElement("button");
+        const card = document.createElement("button");
 
-        button.textContent = sheet.name;
+        const count =
+            (sheet.products || []).length;
 
-        button.className = "category-btn";
 
-        button.addEventListener("click", () => {
+        card.className = "category-card";
 
-            setActiveButton(button);
+        card.innerHTML = `
+            <div class="category-icon">▤</div>
+
+            <div class="category-content">
+
+                <span class="category-label">
+                    CATEGORY ${index + 1}
+                </span>
+
+                <strong>
+                    ${sheet.name}
+                </strong>
+
+                <small>
+                    ${count.toLocaleString("fa-IR")} محصول
+                </small>
+
+            </div>
+
+            <span class="category-arrow">←</span>
+        `;
+
+
+        card.addEventListener("click", () => {
+
+            setActiveButton(card);
 
             showSheet(index);
 
         });
 
-        menu.appendChild(button);
+
+        menu.appendChild(card);
 
     });
 
-
-    hero.appendChild(menu);
 }
 
 
@@ -122,16 +169,15 @@ function createCategoryMenu() {
 function setActiveButton(activeButton) {
 
     document
-        .querySelectorAll(".category-btn")
-        .forEach(button => {
+        .querySelectorAll(".category-card")
+        .forEach(card => {
 
-            button.classList.remove("active");
+            card.classList.remove("active");
 
         });
 
     activeButton.classList.add("active");
 }
-
 
 // -----------------------------------------
 // نمایش یک Sheet
