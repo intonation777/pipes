@@ -11,12 +11,80 @@ const lastUpdate = document.getElementById("lastUpdate");
 const clearSearch = document.getElementById("clearSearch");
 const resultStatus = document.getElementById("resultStatus");
 
-
-// =========================================
-// عناصر اصلی
-// =========================================
-
 const categoryMenu = document.getElementById("categoryMenu");
+
+const themeToggle = document.getElementById("themeToggle");
+
+
+// =========================================
+// حالت روشن / تاریک
+// =========================================
+
+const THEME_KEY = "pipes-theme";
+
+function getSystemTheme() {
+
+    return window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+
+}
+
+function getActiveTheme() {
+
+    const saved = localStorage.getItem(THEME_KEY);
+
+    if (saved === "dark" || saved === "light") {
+        return saved;
+    }
+
+    return getSystemTheme();
+
+}
+
+function applyTheme(theme) {
+
+    document.documentElement.setAttribute("data-theme", theme);
+
+    themeToggle.setAttribute(
+        "aria-pressed",
+        theme === "dark" ? "true" : "false"
+    );
+
+}
+
+if (themeToggle) {
+
+    applyTheme(getActiveTheme());
+
+    themeToggle.addEventListener("click", () => {
+
+        const next =
+            getActiveTheme() === "dark" ? "light" : "dark";
+
+        localStorage.setItem(THEME_KEY, next);
+
+        applyTheme(next);
+
+    });
+
+    // اگر کاربر هیچ ترجیح دستی ثبت نکرده، تغییر حالت سیستم را دنبال کن
+    if (window.matchMedia) {
+
+        window
+            .matchMedia("(prefers-color-scheme: dark)")
+            .addEventListener("change", () => {
+
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(getSystemTheme());
+                }
+
+            });
+
+    }
+
+}
 
 
 // =========================================
@@ -126,7 +194,7 @@ async function loadProducts() {
             </tr>
         `;
 
-        productCount.textContent = "0";
+        productCount.textContent = "۰";
         resultStatus.textContent = "خطا در دریافت اطلاعات";
 
     }
@@ -164,8 +232,6 @@ function createCategoryMenu() {
 
     const allCard =
         createCategoryCard(
-            "▦",
-            "ALL PRODUCTS",
             "همه محصولات",
             totalProducts
         );
@@ -199,8 +265,6 @@ function createCategoryMenu() {
 
         const card =
             createCategoryCard(
-                "▤",
-                `CATEGORY ${index + 1}`,
                 sheet.name || `دسته ${index + 1}`,
                 count
             );
@@ -227,49 +291,20 @@ function createCategoryMenu() {
 // ساخت کارت دسته‌بندی
 // =========================================
 
-function createCategoryCard(
-    icon,
-    label,
-    title,
-    count
-) {
+function createCategoryCard(title, count) {
 
     const card =
         document.createElement("button");
 
     card.type = "button";
 
-    card.className =
-        "category-card";
-
+    card.className = "category-card";
 
     card.innerHTML = `
-
-        <div class="category-icon">
-            ${icon}
-        </div>
-
-        <div class="category-content">
-
-            <span class="category-label">
-                ${escapeHTML(label)}
-            </span>
-
-            <strong>
-                ${escapeHTML(title)}
-            </strong>
-
-            <small>
-                ${count.toLocaleString("fa-IR")}
-                محصول
-            </small>
-
-        </div>
-
-        <span class="category-arrow">
-            ←
+        <span>${escapeHTML(title)}</span>
+        <span class="category-count">
+            ${count.toLocaleString("fa-IR")}
         </span>
-
     `;
 
     return card;
@@ -292,6 +327,12 @@ function setActiveButton(activeButton) {
         });
 
     activeButton.classList.add("active");
+
+    activeButton.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest"
+    });
 
 }
 
@@ -563,22 +604,33 @@ function formatNumber(value) {
 // جستجو
 // =========================================
 
+let searchDebounce = null;
+
 searchInput.addEventListener("input", function () {
-    const query = normalizeText(this.value);
+
     updateSearchUI();
 
-    if (!query) {
-        renderProducts(currentProducts);
-        return;
-    }
+    clearTimeout(searchDebounce);
 
-    const filtered = currentProducts.filter(product => {
-        return Object.values(product).some(value => {
-            return normalizeText(value).includes(query);
+    searchDebounce = setTimeout(() => {
+
+        const query = normalizeText(this.value);
+
+        if (!query) {
+            renderProducts(currentProducts);
+            return;
+        }
+
+        const filtered = currentProducts.filter(product => {
+            return Object.values(product).some(value => {
+                return normalizeText(value).includes(query);
+            });
         });
-    });
 
-    renderProducts(filtered);
+        renderProducts(filtered);
+
+    }, 120);
+
 });
 
 // =========================================
@@ -654,8 +706,7 @@ function formatPersianDate(dateString) {
             new Intl.DateTimeFormat(
                 "fa-IR-u-ca-persian",
                 {
-                    year: "numeric",
-                    month: "long",
+                    month: "short",
                     day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit"
