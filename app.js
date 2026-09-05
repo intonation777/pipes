@@ -621,10 +621,21 @@ searchInput.addEventListener("input", function () {
             return;
         }
 
+        // عبارت جستجو را به کلمات جدا می‌کنیم تا کاربر بتواند
+        // چند کلمه را با هم جستجو کند، حتی اگر هرکدام در یک
+        // ستون متفاوت از محصول (مثلاً نام و سایز) قرار داشته باشند.
+        const queryWords = query.split(" ").filter(Boolean);
+
         const filtered = currentProducts.filter(product => {
-            return Object.values(product).some(value => {
-                return normalizeText(value).includes(query);
-            });
+
+            const productText = Object.values(product)
+                .map(normalizeText)
+                .join(" ");
+
+            return queryWords.every(word =>
+                productText.includes(word)
+            );
+
         });
 
         renderProducts(filtered);
