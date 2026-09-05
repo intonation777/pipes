@@ -12,7 +12,14 @@
 
     <meta
         name="theme-color"
-        content="#071a1d"
+        content="#eef0ed"
+        media="(prefers-color-scheme: light)"
+    >
+
+    <meta
+        name="theme-color"
+        content="#14171a"
+        media="(prefers-color-scheme: dark)"
     >
 
     <meta
@@ -36,15 +43,31 @@
     <meta name="twitter:title" content="کاتالوگ لوله و محصولات">
     <meta name="twitter:description" content="مشخصات و قیمت روز محصولات لوله">
     <meta name="twitter:image" content="https://intonation777.github.io/pipes/preview-v2.JPG">
+
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,
     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
-    <rect width='100' height='100' rx='22' fill='%2300a884'/>
+    <rect width='100' height='100' rx='22' fill='%23b1551f'/>
     <path d='M25 25h25v25H25zM50 50h25v25H50z' fill='white'/>
     <path d='M50 25v25M25 50h25' stroke='white' stroke-width='8'/>
     </svg>">
 
     <title>کاتالوگ لوله | قیمت و مشخصات محصولات</title>
+
+    <!--
+        این اسکریپت کوچک قبل از رندر صفحه اجرا می‌شود تا از
+        چشمک زدن رنگ (Flash of wrong theme) هنگام بارگذاری جلوگیری کند.
+    -->
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem("pipes-theme");
+                if (saved === "dark" || saved === "light") {
+                    document.documentElement.setAttribute("data-theme", saved);
+                }
+            } catch (e) {}
+        })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -74,21 +97,15 @@
 
     <header class="header">
 
-        <div class="header-glow header-glow-one"></div>
-        <div class="header-glow header-glow-two"></div>
-
         <div class="container header-content">
 
             <div class="brand">
 
-                <div class="brand-icon">
+                <div class="brand-mark">
                     <span>▥</span>
                 </div>
 
                 <div class="brand-text">
-
-                    <div class="brand-kicker">
-                    </div>
 
                     <h1>
                         کاتالوگ لوله
@@ -102,22 +119,36 @@
 
             </div>
 
+            <div class="header-actions">
 
-            <a
-                class="download-btn"
-                href="pipes.xlsx"
-                download
-            >
+                <button
+                    type="button"
+                    class="theme-toggle"
+                    id="themeToggle"
+                    aria-label="تغییر حالت روشن و تاریک"
+                    title="تغییر حالت نمایش"
+                >
+                    <span class="theme-icon theme-icon-light">☀</span>
+                    <span class="theme-icon theme-icon-dark">☾</span>
+                </button>
 
-                <span class="download-icon">
-                    ↓
-                </span>
+                <a
+                    class="download-btn"
+                    href="pipes.xlsx"
+                    download
+                >
 
-                <span>
-                    دانلود لیست Excel
-                </span>
+                    <span class="download-icon">
+                        ↓
+                    </span>
 
-            </a>
+                    <span class="download-label">
+                        دانلود Excel
+                    </span>
+
+                </a>
+
+            </div>
 
         </div>
 
@@ -129,54 +160,65 @@
 
 
         <!-- =========================
-             HERO
+             HERO + SEARCH
         ========================== -->
 
         <section class="hero">
 
             <div class="hero-text">
 
-                <div class="eyebrow">
-                </div>
-
                 <h2>
-                    محصولات را سریع پیدا کنید
+                    محصول موردنظرتان را پیدا کنید
                 </h2>
 
                 <p>
-                    دسته‌بندی موردنظر را انتخاب کنید یا نام محصول،
-                    سایز، ضخامت و مشخصات آن را جستجو کنید.
+                    یک دسته‌بندی را انتخاب کنید یا نام محصول، سایز و ضخامت
+                    آن را در جستجو تایپ کنید.
                 </p>
 
             </div>
 
+            <div class="hero-stats">
 
-            <div class="search-box">
+                <div class="stat-chip">
+                    <strong id="productCount">۰</strong>
+                    <span>محصول</span>
+                </div>
 
-                <span class="search-icon">
-                    ⌕
-                </span>
-
-                <input
-                    type="search"
-                    id="searchInput"
-                    autocomplete="off"
-                    placeholder="جستجوی محصول، سایز، ضخامت و..."
-                >
-
-                <button
-                    type="button"
-                    class="clear-search"
-                    id="clearSearch"
-                    aria-label="پاک کردن جستجو"
-                >
-                    ×
-                </button>
+                <div class="stat-chip stat-chip-update">
+                    <span class="stat-chip-label">بروزرسانی</span>
+                    <strong id="lastUpdate">−</strong>
+                </div>
 
             </div>
 
         </section>
 
+
+        <div class="search-box">
+
+            <span class="search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                id="searchInput"
+                autocomplete="off"
+                placeholder="جستجوی محصول، سایز، ضخامت و..."
+                inputmode="search"
+            >
+
+            <button
+                type="button"
+                class="clear-search"
+                id="clearSearch"
+                aria-label="پاک کردن جستجو"
+            >
+                ×
+            </button>
+
+        </div>
 
 
         <!-- =========================
@@ -185,82 +227,10 @@
 
         <section class="categories-section">
 
-            <div class="section-heading">
-
-                <div>
-
-                    <span>
-                        دسته‌بندی
-                    </span>
-
-                    <h3>
-                        انتخاب گروه محصولات
-                    </h3>
-
-                </div>
-
-                <div class="category-hint">
-                    ← برای مشاهده بیشتر بکشید
-                </div>
-
-            </div>
-
-
             <div
                 id="categoryMenu"
                 class="category-cards"
             ></div>
-
-        </section>
-
-
-
-        <!-- =========================
-             INFO
-        ========================== -->
-
-        <section class="info">
-
-            <div class="info-card">
-
-                <div class="info-icon">
-                    ▦
-                </div>
-
-                <div class="info-content">
-
-                    <span>
-                        تعداد محصولات
-                    </span>
-
-                    <strong id="productCount">
-                        0
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="info-card">
-
-                <div class="info-icon update-icon">
-                    ↻
-                </div>
-
-                <div class="info-content">
-
-                    <span>
-                        آخرین بروزرسانی
-                    </span>
-
-                    <strong id="lastUpdate">
-                        -
-                    </strong>
-
-                </div>
-
-            </div>
 
         </section>
 
@@ -274,16 +244,9 @@
 
             <div class="products-header">
 
-                <div>
-
-                    <span class="products-kicker">
-                    </span>
-
-                    <h3>
-                        لیست محصولات
-                    </h3>
-
-                </div>
+                <h3>
+                    لیست محصولات
+                </h3>
 
                 <div
                     id="resultStatus"
@@ -333,7 +296,7 @@
             </div>
 
             <span>
-                © 2026
+                © ۲۰۲۶
             </span>
 
         </div>
